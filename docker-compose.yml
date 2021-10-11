@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  city:
+    build: ./../coffee-city
+    ports:
+      - 8090:8090
+    environment:
+      - HTTP_PORT=8090
+      - MONGO_CONNECTION=mongodb://db:27017/coffee
+      - SELF_API_KEY=0e214071-09b5-4cd3-841d-bdc19febe9c9
+      - WEATHER_API_KEY=3de4ad39-0977-467f-8e07-70b3f3e4ebd3
+    depends_on:
+      - db
+      - weather
+
+  weather:
+    build: ./../coffee-weather
+    ports:
+      - 8091:8091
+    environment:
+      - HTTP_PORT=8091
+      - MONGO_CONNECTION=mongodb://db:27017/coffee
+      - SELF_API_KEY=3de4ad39-0977-467f-8e07-70b3f3e4ebd3
+      - CITY_API_KEY=0e214071-09b5-4cd3-841d-bdc19febe9c9
+      - OWM_API_KEY=6586e10cecfb66ea36f8979c04df9194
+    depends_on:
+      - db
+
+  # docker run -it --rm -p 27017:27017 --name mongodb -v ~/projects/local_mongo/data/db:/data/db mongo
+  db:
+    image: mongo
+    container_name: db
+    # volumes:
+    #  - mongodb:/data/db
+    ports:
+      - 27017:27017
+    command: mongod
